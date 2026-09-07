@@ -18,6 +18,7 @@ import {
   Maximize2,
   Star,
 } from "lucide-react";
+import { compressImage } from "@/lib/compressImage";
 
 export default function CreateProjectPage() {
   const router = useRouter();
@@ -57,14 +58,24 @@ export default function CreateProjectPage() {
     setErrorMessage(null);
 
     try {
+      const processedFile = await compressImage(file, {
+        maxWidth: 1600,
+        maxHeight: 1200,
+        quality: 0.85,
+      });
+
       const uploadFormData = new FormData();
-      uploadFormData.append("file", file);
+      uploadFormData.append("file", processedFile);
       uploadFormData.append("folder", "projects");
 
       const response = await fetch("/api/upload", {
         method: "POST",
         body: uploadFormData,
       });
+
+      if (response.status === 413) {
+        throw new Error("Ukuran foto thumbnail melebihi batas 4.5MB. Harap gunakan gambar yang lebih kecil.");
+      }
 
       const text = await response.text();
       let data: any = {};
@@ -97,14 +108,24 @@ export default function CreateProjectPage() {
     setErrorMessage(null);
 
     try {
+      const processedFile = await compressImage(file, {
+        maxWidth: 1920,
+        maxHeight: 1080,
+        quality: 0.85,
+      });
+
       const uploadFormData = new FormData();
-      uploadFormData.append("file", file);
+      uploadFormData.append("file", processedFile);
       uploadFormData.append("folder", "gallery");
 
       const response = await fetch("/api/upload", {
         method: "POST",
         body: uploadFormData,
       });
+
+      if (response.status === 413) {
+        throw new Error("Ukuran foto galeri melebihi batas 4.5MB. Harap gunakan gambar yang lebih kecil.");
+      }
 
       const text = await response.text();
       let data: any = {};

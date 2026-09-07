@@ -741,6 +741,7 @@ async function runBackendTests() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: originalProfile.name,
+            avatarUrl: originalProfile.avatarUrl,
             heroTitle: originalProfile.heroTitle,
             heroSubtitle: originalProfile.heroSubtitle,
             emailContact: originalProfile.emailContact,

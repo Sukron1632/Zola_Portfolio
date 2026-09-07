@@ -15,6 +15,7 @@ import {
   MapPin,
   Sparkles,
 } from "lucide-react";
+import { compressImage } from "@/lib/compressImage";
 
 export default function AdminProfilePage() {
   const [loading, setLoading] = useState(true);
@@ -68,7 +69,7 @@ export default function AdminProfilePage() {
       });
   }, []);
 
-  // Upload Avatar Image to Supabase Storage
+  // Upload Avatar Image to Supabase Storage with Automatic Compression & Auto-Save
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -77,14 +78,27 @@ export default function AdminProfilePage() {
     setError(null);
 
     try {
+      // 1. Automatically compress high-resolution photos (phone cameras, etc.) to prevent Vercel 413
+      const processedFile = await compressImage(file, {
+        maxWidth: 1200,
+        maxHeight: 1200,
+        quality: 0.85,
+      });
+
       const uploadData = new FormData();
-      uploadData.append("file", file);
+      uploadData.append("file", processedFile);
       uploadData.append("folder", "avatars");
 
       const res = await fetch("/api/upload", {
         method: "POST",
         body: uploadData,
       });
+
+      if (res.status === 413) {
+        throw new Error(
+          "Ukuran file melebihi batas 4.5MB serverless. Harap pilih foto dengan ukuran lebih kecil."
+        );
+      }
 
       const text = await res.text();
       let result: any = {};
@@ -98,18 +112,42 @@ export default function AdminProfilePage() {
         throw new Error(result.error || `Gagal mengunggah foto avatar (${res.status}).`);
       }
 
+      // 2. Update local state
       setFormData((prev) => ({ ...prev, avatarUrl: result.url }));
+
+      // 3. Immediately sync and persist to database so it is NEVER lost!
+      try {
+        await fetch("/api/profile", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...formData, avatarUrl: result.url }),
+        });
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 4000);
+      } catch (saveErr) {
+        console.error("Auto-sync profile avatar error:", saveErr);
+      }
     } catch (err: any) {
       setError(err.message || "Gagal upload avatar");
     } finally {
       setUploadingAvatar(false);
+      if (avatarInputRef.current) avatarInputRef.current.value = "";
     }
   };
 
-  // Upload Resume PDF Document to Supabase Storage
+  // Upload Resume PDF Document to Supabase Storage with Pre-Validation & Auto-Save
   const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Reject upfront if over Vercel 4.5MB limit
+    if (file.size > 4.5 * 1024 * 1024) {
+      setError(
+        `Ukuran file dokumen (${(file.size / 1024 / 1024).toFixed(1)}MB) melebihi batas server 4.5MB. Silakan gunakan file PDF yang telah dikompresi.`
+      );
+      if (resumeInputRef.current) resumeInputRef.current.value = "";
+      return;
+    }
 
     setUploadingResume(true);
     setError(null);
@@ -124,6 +162,12 @@ export default function AdminProfilePage() {
         body: uploadData,
       });
 
+      if (res.status === 413) {
+        throw new Error(
+          "Ukuran dokumen melebihi batas server 4.5MB. Harap gunakan file PDF yang lebih kecil."
+        );
+      }
+
       const text = await res.text();
       let result: any = {};
       try {
@@ -137,10 +181,24 @@ export default function AdminProfilePage() {
       }
 
       setFormData((prev) => ({ ...prev, resumeUrl: result.url }));
+
+      // Immediately sync and persist to database
+      try {
+        await fetch("/api/profile", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...formData, resumeUrl: result.url }),
+        });
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 4000);
+      } catch (saveErr) {
+        console.error("Auto-sync profile resume error:", saveErr);
+      }
     } catch (err: any) {
       setError(err.message || "Gagal upload resume");
     } finally {
       setUploadingResume(false);
+      if (resumeInputRef.current) resumeInputRef.current.value = "";
     }
   };
 
@@ -221,72 +279,83 @@ export default function AdminProfilePage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* ========================================================= */}
-        {/* MEDIA UPLOAD SECTION (AVATAR & RESUME PDF) */}
-        {/* ========================================================= */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Avatar Photo Card */}
-          <div className="p-5 rounded-xl border border-obsidian-border bg-obsidian-canvas card-radial-glow space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-xs uppercase tracking-wider text-white flex items-center gap-1.5">
-                <ImageIcon className="w-3.5 h-3.5 text-brand-emerald" />
-                <span>Foto Avatar Profil</span>
-              </span>
-              <span className="text-[10px] font-mono text-obsidian-muted">Supabase Storage</span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="relative w-20 h-20 rounded-full border-2 border-brand-emerald/40 bg-obsidian-void overflow-hidden flex items-center justify-center shrink-0">
-                {formData.avatarUrl ? (
-                  <img
-                    src={formData.avatarUrl}
-                    alt={formData.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="text-xl font-bold font-mono text-brand-emerald">
-                    {formData.name.charAt(0)}
-                  </div>
-                )}
-                {uploadingAvatar && (
-                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                    <Loader2 className="w-5 h-5 text-brand-emerald animate-spin" />
-                  </div>
-                )}
+          {/* ========================================================= */}
+          {/* MEDIA UPLOAD SECTION (AVATAR & RESUME PDF) */}
+          {/* ========================================================= */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Avatar Photo Card */}
+            <div className="p-5 rounded-xl border border-obsidian-border bg-obsidian-canvas card-radial-glow space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs uppercase tracking-wider text-white flex items-center gap-1.5">
+                  <ImageIcon className="w-3.5 h-3.5 text-brand-emerald" />
+                  <span>Foto Avatar Profil</span>
+                </span>
+                <span className="text-[10px] font-mono text-obsidian-muted">Supabase Storage</span>
               </div>
 
-              <div className="space-y-2 flex-1">
-                <input
-                  type="file"
-                  ref={avatarInputRef}
-                  onChange={handleAvatarUpload}
-                  accept="image/png,image/jpeg,image/webp"
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => avatarInputRef.current?.click()}
-                  disabled={uploadingAvatar}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-obsidian-border hover:border-brand-emerald bg-obsidian-card text-obsidian-text hover:text-white text-xs font-mono transition-all cursor-pointer"
-                >
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>{formData.avatarUrl ? "Ganti Foto" : "Unggah Foto Profil"}</span>
-                </button>
-                {formData.avatarUrl && (
+              <div className="flex items-center gap-4">
+                <div className="relative w-20 h-20 rounded-full border-2 border-brand-emerald/40 bg-obsidian-void overflow-hidden flex items-center justify-center shrink-0">
+                  {formData.avatarUrl ? (
+                    <img
+                      src={formData.avatarUrl}
+                      alt={formData.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-xl font-bold font-mono text-brand-emerald">
+                      {formData.name.charAt(0)}
+                    </div>
+                  )}
+                  {uploadingAvatar && (
+                    <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                      <Loader2 className="w-5 h-5 text-brand-emerald animate-spin" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2 flex-1">
+                  <input
+                    type="file"
+                    ref={avatarInputRef}
+                    onChange={handleAvatarUpload}
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                  />
                   <button
                     type="button"
-                    onClick={() => setFormData((prev) => ({ ...prev, avatarUrl: "" }))}
-                    className="block text-[10px] text-red-400 hover:text-red-300 font-mono"
+                    onClick={() => avatarInputRef.current?.click()}
+                    disabled={uploadingAvatar}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-obsidian-border hover:border-brand-emerald bg-obsidian-card text-obsidian-text hover:text-white text-xs font-mono transition-all cursor-pointer"
                   >
-                    Hapus Foto Avatar
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{formData.avatarUrl ? "Ganti Foto" : "Unggah Foto Profil"}</span>
                   </button>
-                )}
-                <p className="text-[10px] text-obsidian-muted leading-tight">
-                  Format: JPG, PNG, WEBP. Ditampilkan di hero banner dan kartu admin.
-                </p>
+                  {formData.avatarUrl && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setFormData((prev) => ({ ...prev, avatarUrl: "" }));
+                        try {
+                          await fetch("/api/profile", {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ ...formData, avatarUrl: "" }),
+                          });
+                          setSuccess(true);
+                          setTimeout(() => setSuccess(false), 3000);
+                        } catch {}
+                      }}
+                      className="block text-[10px] text-red-400 hover:text-red-300 font-mono cursor-pointer"
+                    >
+                      Hapus Foto Avatar
+                    </button>
+                  )}
+                  <p className="text-[10px] text-obsidian-muted leading-tight">
+                    Format: JPG, PNG, WEBP. Otomatis dikompresi & disimpan ke database.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
           {/* Resume PDF Document Card */}
           <div className="p-5 rounded-xl border border-obsidian-border bg-obsidian-canvas card-radial-glow space-y-4">
