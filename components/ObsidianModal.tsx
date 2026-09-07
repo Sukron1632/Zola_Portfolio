@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 interface ObsidianModalProps {
@@ -20,6 +21,12 @@ export default function ObsidianModal({
   children,
   maxWidth = "lg",
 }: ObsidianModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -36,7 +43,7 @@ export default function ObsidianModal({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const maxWidthClass = {
     sm: "max-w-sm",
@@ -46,8 +53,8 @@ export default function ObsidianModal({
     "2xl": "max-w-2xl",
   }[maxWidth];
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div
         className="fixed inset-0"
         onClick={onClose}
@@ -55,7 +62,7 @@ export default function ObsidianModal({
       />
 
       <div
-        className={`relative w-full ${maxWidthClass} rounded-xl border border-obsidian-border bg-obsidian-canvas shadow-2xl card-radial-glow overflow-hidden z-10`}
+        className={`relative w-full ${maxWidthClass} rounded-xl border border-obsidian-border bg-obsidian-canvas shadow-2xl card-radial-glow overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-200 ease-out`}
       >
         {/* Modal Header */}
         <div className="flex items-start justify-between p-5 border-b border-obsidian-border bg-obsidian-card/50">
@@ -81,6 +88,7 @@ export default function ObsidianModal({
         {/* Modal Content */}
         <div className="p-6 max-h-[80vh] overflow-y-auto">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

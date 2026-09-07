@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Shield,
@@ -31,6 +32,11 @@ export default function CertificateModal({
 }: CertificateModalProps) {
   const [activePageIndex, setActivePageIndex] = useState(0);
   const [notice, setNotice] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // PDF Rendering States
   const [pdfTotalPages, setPdfTotalPages] = useState<number>(1);
@@ -46,12 +52,24 @@ export default function CertificateModal({
     setUseCanvas(false);
   }, [cert?.id, isOpen]);
 
-  // Anti-Theft: Prevent keyboard shortcuts like Ctrl+S (Save) and Ctrl+P (Print)
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen]);
+
+  // Anti-Theft: Prevent keyboard shortcuts & Escape key to close
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (
+      if (e.key === "Escape") {
+        onClose();
+      } else if (
         (e.ctrlKey || e.metaKey) &&
         (e.key === "s" || e.key === "S" || e.key === "p" || e.key === "P")
       ) {
@@ -63,7 +81,7 @@ export default function CertificateModal({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   // Helper to reliably check if a resource URL points to a PDF
   const isPdfResource = (url: string) => {
@@ -211,9 +229,11 @@ export default function CertificateModal({
     return `Page ${index + 1}`;
   };
 
-  return (
+  if (!isOpen || !cert || !mounted) return null;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 select-none overflow-y-auto"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 select-none overflow-y-auto"
       onContextMenu={handleContextMenu}
     >
       {/* Backdrop */}
@@ -225,7 +245,7 @@ export default function CertificateModal({
 
       {/* Modal Container: Balanced Proportions, Header & Footer never cut off */}
       <div
-        className="relative w-full max-w-2xl lg:max-w-3xl rounded-xl border border-obsidian-border bg-obsidian-canvas shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col my-auto"
+        className="relative w-full max-w-2xl lg:max-w-3xl rounded-xl border border-obsidian-border bg-obsidian-canvas shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col my-auto animate-in fade-in zoom-in-95 duration-200 ease-out"
         onClick={(e) => e.stopPropagation()}
         onContextMenu={handleContextMenu}
       >
@@ -536,6 +556,7 @@ export default function CertificateModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
