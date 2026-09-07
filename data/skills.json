@@ -1,0 +1,209 @@
+[
+  {
+    "name": "Extreme Programing",
+    "category": "analysis",
+    "description": "Basic Version Control\n\nRepository Management\n\nHistory Tracking\n\nCode Sharing",
+    "proficiency": 40,
+    "level": "familiar",
+    "isFeatured": true,
+    "id": "1788703458723"
+  },
+  {
+    "name": "Waterfall",
+    "category": "analysis",
+    "description": "Basic Version Control\n\nRepository Management\n\nHistory Tracking\n\nCode Sharing",
+    "proficiency": 60,
+    "level": "proficient",
+    "isFeatured": true,
+    "id": "1788703424722"
+  },
+  {
+    "id": "1",
+    "name": "Node.js Engine",
+    "category": "backend",
+    "description": "High-throughput runtime, event-driven async workers",
+    "proficiency": 30,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "2",
+    "name": "PostgreSQL & MySQL",
+    "category": "backend",
+    "description": "Connection pooling, relational indexing, strict ACID transactions",
+    "proficiency": 40,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "3",
+    "name": "Prisma ORM",
+    "category": "backend",
+    "description": "Type-safe database queries, schema migrations, relation modeling",
+    "proficiency": 30,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "5",
+    "name": "API Middleware & Security",
+    "category": "backend",
+    "description": "Rate-limiting, CORS, JWT session authentication, input validation",
+    "proficiency": 50,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "f1",
+    "name": "React.js Ecosystem",
+    "category": "frontend",
+    "description": "Component-driven architecture, custom hooks, virtual DOM optimization",
+    "proficiency": 30,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "f2",
+    "name": "TypeScript",
+    "category": "frontend",
+    "description": "Strict typing, interfaces, generics, type-safe state contracts",
+    "proficiency": 20,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "f3",
+    "name": "Tailwind CSS & Modern Styling",
+    "category": "frontend",
+    "description": "Utility-first design tokens, responsive grid/flexbox, dark mode themes",
+    "proficiency": 30,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "f4",
+    "name": "HTML5 & Modern Web APIs",
+    "category": "frontend",
+    "description": "Accessible semantic structure, Core Web Vitals, browser event models",
+    "proficiency": 40,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "f5",
+    "name": "Responsive Mobile-First UI/UX",
+    "category": "frontend",
+    "description": "Adaptive layouts, touch interactions, micro-animations, glassmorphism",
+    "proficiency": 30,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "fw1",
+    "name": "Next.js 14 App Router",
+    "category": "framework",
+    "description": "React Server Components, server actions, route handlers, dynamic caching",
+    "proficiency": 30,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "fw3",
+    "name": "Laravel (PHP)",
+    "category": "framework",
+    "description": "MVC architecture, Eloquent ORM, Blade templating, service providers",
+    "proficiency": 50,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "fw4",
+    "name": "NextAuth.js",
+    "category": "framework",
+    "description": "Secure session JWT cookies, OAuth 2.0 Google Provider, route gates",
+    "proficiency": 30,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "6",
+    "name": "UML Modeling Suite",
+    "category": "analysis",
+    "description": "Use-Case Diagrams, Class Modeling, Sequence & Activity Diagrams",
+    "proficiency": 60,
+    "level": "proficient",
+    "isFeatured": true
+  },
+  {
+    "id": "7",
+    "name": "Software Req. Specs (SRS)",
+    "category": "analysis",
+    "description": "IEEE 830-compliant functional matrices, traceability",
+    "proficiency": 60,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "8",
+    "name": "ERD Schema & Normalization",
+    "category": "analysis",
+    "description": "3NF / BCNF relational schemas, foreign key constraints",
+    "proficiency": 60,
+    "level": "proficient",
+    "isFeatured": true
+  },
+  {
+    "id": "9",
+    "name": "DFD Process Modeling",
+    "category": "analysis",
+    "description": "Data Flow Diagrams Level 0-2, data store dictionaries",
+    "proficiency": 60,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "10",
+    "name": "Docker & Containerization",
+    "category": "devops",
+    "description": "Multi-stage builds, isolated networks, immutable runtime",
+    "proficiency": 88,
+    "level": "mastery",
+    "isFeatured": false
+  },
+  {
+    "id": "11",
+    "name": "Redis Caching & Pub/Sub",
+    "category": "devops",
+    "description": "In-memory session caching, rate-limiting, message queues",
+    "proficiency": 85,
+    "level": "proficient",
+    "isFeatured": false
+  },
+  {
+    "id": "12",
+    "name": "GitHub Actions CI/CD",
+    "category": "devops",
+    "description": "Basic Version Control, Repository Management, History Tracking, Code Sharing",
+    "proficiency": 40,
+    "level": "proficient",
+    "isFeatured": true
+  },
+  {
+    "id": "13",
+    "name": "Linux (Ubuntu Server)",
+    "category": "devops",
+    "description": "Systemd daemon management, Nginx reverse proxy, SSH hardening",
+    "proficiency": 20,
+    "level": "familiar",
+    "isFeatured": true
+  },
+  {
+    "id": "14",
+    "name": "Vercel / Edge Runtime",
+    "category": "devops",
+    "description": "Serverless edge functions, global CDN caching, zero-downtime deploys",
+    "proficiency": 30,
+    "level": "familiar",
+    "isFeatured": true
+  }
+]

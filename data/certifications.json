@@ -1,0 +1,44 @@
+[
+  {
+    "title": "Learn Machine Learning for Beginners",
+    "issuer": "Dicoding Indonesia",
+    "credentialId": "GRX50L652Z0M",
+    "issueDate": "Sep 2026 / Lifetime",
+    "hash": "sha256:2a1520b3...",
+    "fileName": "Belajar Machine Learning untuk Pemula_Zola Dimas Firmansyah.pdf",
+    "fileSize": "0.9 MB",
+    "isHeroBadge": true,
+    "verifyUrl": "https://example.com/verify",
+    "fileUrl": "https://tyywhqwzadynlibihfon.supabase.co/storage/v1/object/public/portofolio/certifications/1788737263572-belajar_machine_learning_untuk_pemula_zola_dimas_firmansyah.pdf",
+    "description": "Certified in foundational machine learning, covering data workflows, predictive modeling, feature engineering, and model tuning applied to real-world datasets.",
+    "id": "1788737265782"
+  },
+  {
+    "title": "Junior Website Programmer",
+    "issuer": "Badan Sertifikasi Nasional Profesi (BNSP)",
+    "credentialId": "6209 2513 5 0029707 2025",
+    "issueDate": "Dec 2025 – Dec 2028",
+    "hash": "sha256:29098d19...",
+    "fileName": "SERTIFIKAT BNSP.pdf",
+    "fileSize": "1.7 MB",
+    "isHeroBadge": true,
+    "verifyUrl": "https://example.com/verify",
+    "fileUrl": "https://tyywhqwzadynlibihfon.supabase.co/storage/v1/object/public/portofolio/certifications/1788736954510-sertifikat_bnsp.pdf",
+    "description": "Validates foundational web programming skills, including UI implementation, structured coding according to best practices, technical documentation, and application debugging",
+    "id": "1788736957401"
+  },
+  {
+    "id": "1788732424495",
+    "title": "Cybersecurity Fundamentals",
+    "issuer": "IBM",
+    "credentialId": "CRED-95208",
+    "issueDate": "Sep 2026 / Lifetime",
+    "hash": "sha256:65d657ce4810a9b27d891e4f3a7c5b6e2d1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b",
+    "fileName": "IBMDesign20260903-20-40844g.pdf",
+    "fileSize": "0.1 MB",
+    "isHeroBadge": true,
+    "verifyUrl": "https://example.com/verify",
+    "fileUrl": "https://tyywhqwzadynlibihfon.supabase.co/storage/v1/object/public/portofolio/certifications/1788732422487-ibmdesign20260903-20-40844g.pdf",
+    "description": "Specialized credentials in cybersecurity foundations, digital threat architectural compliance, and system vulnerability management."
+  }
+]

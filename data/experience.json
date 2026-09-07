@@ -1,0 +1,58 @@
+[
+  {
+    "id": "1788707426620",
+    "role": "Software Developer",
+    "organization": "Grand Mercure, Phoenix, Ibis Yogyakarta",
+    "location": "Yogyakarta / Remote",
+    "period": "Jan 2026 – Jul 2026",
+    "type": "Contract",
+    "status": "Completed",
+    "impactMetric": "",
+    "description": "Creating a web-based inventory system that leverages QR codes to simplify IT asset tracking and management.",
+    "technologies": [
+      "Laravel",
+      "Php",
+      "Javascript",
+      "MySQL"
+    ],
+    "proofFileName": "Verified_Milestone_Proof.pdf",
+    "isPublished": true
+  },
+  {
+    "id": "1788705862064",
+    "role": "Web Developer",
+    "organization": "UPN \"VETERAN\" YOGYAKARTA",
+    "location": "Desa Ambalkliwonan",
+    "period": "Jul 2025 – Aug 2025",
+    "type": "Gov/Community",
+    "status": "Completed",
+    "impactMetric": "High Performance Delivery",
+    "description": "Creating a village website to showcase local potential and reach a broader audience.",
+    "technologies": [
+      "scss",
+      "HTML",
+      "CSS",
+      "Javascript"
+    ],
+    "proofFileName": "Verified_Milestone_Proof.pdf",
+    "isPublished": true
+  },
+  {
+    "id": "1788707099593",
+    "role": "Web Developer",
+    "organization": "Diskominfo DIY",
+    "location": "Yogyakarta",
+    "period": "Jan 2025 – Feb 2025",
+    "type": "Internship",
+    "status": "Completed",
+    "impactMetric": "",
+    "description": "Redesigned the full-stack Web Wiki Pemda DIY platform using React and Golang. Key contributions included developing secure role-based access, content management, and Google Analytics integration, alongside database optimization and UI/UX improvements to ensure system reliability.",
+    "technologies": [
+      "React",
+      "MySQL",
+      "GOLANG"
+    ],
+    "proofFileName": "Verified_Milestone_Proof.pdf",
+    "isPublished": true
+  }
+]

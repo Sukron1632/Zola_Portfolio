@@ -1,0 +1,14 @@
+{
+  "displayName": "Zola Dimas Firmansyah",
+  "titleTag": "Information Systems & Junior Web Developer",
+  "siteTitle": "Information Systems & Junior Web Developer",
+  "adminEmail": "zoladimas32@gmail.com",
+  "sessionTimeout": "7 Days (Standard Persistence)",
+  "logClicks": true,
+  "deanonymizeGeo": true,
+  "retentionDays": "30 Days (Auto-pruning)",
+  "poolLimit": 20,
+  "maintenanceMode": false,
+  "maxUploadSizeMB": 10,
+  "updatedAt": "2026-09-06T15:22:46.326Z"
+}

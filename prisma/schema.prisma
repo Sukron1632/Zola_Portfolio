@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// NextAuth User model with custom role
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("ADMIN")
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Singleton model for dynamic public site data
+model Profile {
+  id            Int      @id @default(1)
+  name          String?  @default("Zola Dimas Firmansyah")
+  avatarUrl     String?
+  location      String?  @default("Yogyakarta, Indonesia")
+  heroTitle     String
+  heroSubtitle  String
+  aboutText     String   @db.Text
+  emailContact  String
+  githubUrl     String?
+  linkedinUrl   String?
+  resumeUrl     String?
+  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now())
+}
+
+// Portfolio projects
+model Project {
+  id           String         @id @default(cuid())
+  title        String
+  slug         String         @unique
+  description  String         @db.Text
+  thumbnail    String?
+  gallery      String[]       @default([])
+  documentUrl  String?
+  videoUrl     String?
+  techStack    String[]
+  liveUrl      String?
+  repoUrl      String?
+  badge        String?
+  completedAt  DateTime?
+  isFeatured   Boolean        @default(false)
+  isPublished  Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  clickTracks  ClickTracker[]
+}
+
+// Telemetry & Outbound click tracker
+model ClickTracker {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userAgent String?
+  country   String?
+  clickedAt DateTime @default(now())
+
+  @@index([projectId])
+}

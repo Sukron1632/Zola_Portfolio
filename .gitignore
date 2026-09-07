@@ -1,0 +1,82 @@
+# =======================================================================
+# GITIGNORE RULES — Portfolio & CMS Zola Dimas Firmansyah
+# =======================================================================
+
+# -----------------------------------------------------------------------
+# 1. SECURITY & SENSITIVE ENVIRONMENT VARIABLES (CRITICAL)
+# -----------------------------------------------------------------------
+.env
+.env*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+*.cert
+*.crt
+
+# -----------------------------------------------------------------------
+# 2. INTERNAL DEVELOPMENT & PRIVATE PROJECT NOTES
+# (Excluded from public GitHub repository to keep the repo clean & professional)
+# -----------------------------------------------------------------------
+PRD.md
+AGENTS.md
+design/
+docs/
+scratch/
+*.draft.*
+*.notes.*
+
+# -----------------------------------------------------------------------
+# 3. DEPENDENCIES & PACKAGE MANAGERS
+# -----------------------------------------------------------------------
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# -----------------------------------------------------------------------
+# 4. BUILD ARTIFACTS & CACHES
+# -----------------------------------------------------------------------
+.next/
+out/
+build/
+dist/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# -----------------------------------------------------------------------
+# 5. LOGS & TEMPORARY RUNTIME FILES
+# -----------------------------------------------------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# -----------------------------------------------------------------------
+# 6. CLOUD DEPLOYMENT CACHE
+# -----------------------------------------------------------------------
+.vercel
+
+# -----------------------------------------------------------------------
+# 7. OS & IDE ARTIFACTS
+# -----------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
