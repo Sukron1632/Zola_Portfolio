@@ -478,7 +478,7 @@ export default function AdminProfilePage() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-md bg-white hover:bg-neutral-200 text-obsidian-void font-semibold text-xs tracking-tight transition-all shadow-md disabled:opacity-50 cursor-pointer"
+              className="w-full sm:w-auto justify-center inline-flex items-center gap-2 px-6 py-2.5 rounded-md bg-white hover:bg-neutral-200 text-obsidian-void font-semibold text-xs tracking-tight transition-all shadow-md disabled:opacity-50 cursor-pointer"
             >
               {saving ? (
                 <>

@@ -360,8 +360,8 @@ export default async function AdminDashboardPage() {
           </Link>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
+          <table className="w-full min-w-[580px] text-left text-xs">
             <thead>
               <tr className="border-b border-obsidian-border text-obsidian-muted">
                 <th className="pb-3 font-medium">PROJECT TITLE</th>

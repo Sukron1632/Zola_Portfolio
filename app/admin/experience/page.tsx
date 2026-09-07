@@ -535,7 +535,7 @@ export default function ManageExperiencePage() {
         </div>
 
         {/* Right Column: Milestone Editor Form */}
-        <div className="lg:col-span-5 p-5 sm:p-6 rounded-lg border border-obsidian-border bg-obsidian-canvas card-radial-glow space-y-4 sticky top-20 font-mono text-xs">
+        <div className="lg:col-span-5 p-5 sm:p-6 rounded-lg border border-obsidian-border bg-obsidian-canvas card-radial-glow space-y-4 lg:sticky lg:top-20 font-mono text-xs">
           <div className="space-y-1 pb-3 border-b border-obsidian-border">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-sm text-white flex items-center gap-2">

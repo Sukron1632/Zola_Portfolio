@@ -142,11 +142,11 @@ export default function SystemSettingsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 self-start sm:self-auto font-mono text-xs">
+        <div className="flex items-center gap-3 w-full sm:w-auto font-mono text-xs">
           <button
             onClick={handleSaveSettings}
             type="button"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-obsidian-text hover:bg-white text-obsidian-void font-bold text-xs transition-all shadow-sm"
+            className="w-full sm:w-auto justify-center inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-obsidian-text hover:bg-white text-obsidian-void font-bold text-xs transition-all shadow-sm"
           >
             <Save className="w-3.5 h-3.5" />
             <span>Save Configurations</span>

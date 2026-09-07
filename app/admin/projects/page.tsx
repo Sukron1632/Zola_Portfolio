@@ -135,8 +135,8 @@ export default async function AdminProjectsListPage() {
             </div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs font-mono">
+          <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
+            <table className="w-full min-w-[640px] text-left text-xs font-mono">
               <thead>
                 <tr className="border-b border-obsidian-border text-obsidian-muted">
                   <th className="pb-3 font-medium">PROJECT & SLUG</th>

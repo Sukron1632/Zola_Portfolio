@@ -589,17 +589,17 @@ export default function EditProjectPage() {
         </div>
 
         {/* Form Actions */}
-        <div className="pt-4 border-t border-obsidian-border flex justify-end gap-3">
+        <div className="pt-4 border-t border-obsidian-border flex flex-col sm:flex-row justify-end gap-3">
           <Link
             href="/admin/projects"
-            className="px-4 py-2 rounded-md border border-obsidian-border bg-obsidian-void hover:bg-obsidian-highlight text-obsidian-subtext text-xs font-semibold transition-all"
+            className="w-full sm:w-auto text-center px-4 py-2.5 rounded-md border border-obsidian-border bg-obsidian-void hover:bg-obsidian-highlight text-obsidian-subtext text-xs font-semibold transition-all"
           >
             Batal
           </Link>
           <button
             type="submit"
             disabled={isSubmitting || isUploadingThumb}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-md bg-obsidian-text hover:bg-white disabled:opacity-50 text-obsidian-void text-xs font-semibold transition-all shadow-sm"
+            className="w-full sm:w-auto justify-center inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-obsidian-text hover:bg-white disabled:opacity-50 text-obsidian-void text-xs font-semibold transition-all shadow-sm"
           >
             {isSubmitting ? (
               <>
