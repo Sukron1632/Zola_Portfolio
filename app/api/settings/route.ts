@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSystemSettings, saveSystemSettings } from "@/lib/storage";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/settings - Retrieve current system configurations
 export async function GET() {
   try {

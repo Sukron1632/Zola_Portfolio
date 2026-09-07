@@ -8,6 +8,8 @@ import {
   Credential,
 } from "@/lib/storage";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/certifications - Retrieve all credentials
 export async function GET(req: NextRequest) {
   try {

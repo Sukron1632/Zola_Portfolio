@@ -8,6 +8,8 @@ import {
   TechItem,
 } from "@/lib/storage";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/skills - Retrieve all registered skills
 export async function GET(req: NextRequest) {
   try {

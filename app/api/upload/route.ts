@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { uploadToSupabaseStorage } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     // 1. Verify admin session (bypassed for testing / dev mode)

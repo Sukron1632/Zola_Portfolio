@@ -8,6 +8,8 @@ import {
   CareerRecord,
 } from "@/lib/storage";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/experience - Retrieve all experience milestones
 export async function GET(req: NextRequest) {
   try {
