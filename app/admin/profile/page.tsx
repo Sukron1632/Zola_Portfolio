@@ -86,9 +86,16 @@ export default function AdminProfilePage() {
         body: uploadData,
       });
 
-      const result = await res.json();
+      const text = await res.text();
+      let result: any = {};
+      try {
+        result = JSON.parse(text);
+      } catch {
+        throw new Error(`Respon server tidak valid (${res.status} ${res.statusText})`);
+      }
+
       if (!res.ok) {
-        throw new Error(result.error || "Gagal mengunggah foto avatar.");
+        throw new Error(result.error || `Gagal mengunggah foto avatar (${res.status}).`);
       }
 
       setFormData((prev) => ({ ...prev, avatarUrl: result.url }));
@@ -117,9 +124,16 @@ export default function AdminProfilePage() {
         body: uploadData,
       });
 
-      const result = await res.json();
+      const text = await res.text();
+      let result: any = {};
+      try {
+        result = JSON.parse(text);
+      } catch {
+        throw new Error(`Respon server tidak valid (${res.status} ${res.statusText})`);
+      }
+
       if (!res.ok) {
-        throw new Error(result.error || "Gagal mengunggah dokumen resume/CV.");
+        throw new Error(result.error || `Gagal mengunggah dokumen resume/CV (${res.status}).`);
       }
 
       setFormData((prev) => ({ ...prev, resumeUrl: result.url }));
@@ -143,9 +157,16 @@ export default function AdminProfilePage() {
         body: JSON.stringify(formData),
       });
 
+      const text = await res.text();
+      let resData: any = {};
+      try {
+        resData = JSON.parse(text);
+      } catch {
+        throw new Error(`Respon server tidak valid (${res.status} ${res.statusText}). Kemungkinan timeout database.`);
+      }
+
       if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || "Gagal memperbarui profil");
+        throw new Error(resData.error || `Gagal memperbarui profil (Status: ${res.status})`);
       }
 
       setSuccess(true);

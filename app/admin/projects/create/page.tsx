@@ -66,7 +66,13 @@ export default function CreateProjectPage() {
         body: uploadFormData,
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(`Respon upload tidak valid (${response.status} ${response.statusText})`);
+      }
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to upload thumbnail.");
@@ -100,7 +106,13 @@ export default function CreateProjectPage() {
         body: uploadFormData,
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(`Respon upload tidak valid (${response.status} ${response.statusText})`);
+      }
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to upload gallery screenshot.");
@@ -143,7 +155,13 @@ export default function CreateProjectPage() {
         }),
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(`Respon server tidak valid (${response.status} ${response.statusText}). Kemungkinan timeout database.`);
+      }
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to persist project in database.");
