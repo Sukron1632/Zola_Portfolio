@@ -9,6 +9,24 @@ export async function GET() {
   const checks: Record<string, any> = {};
 
   // 1. Check PostgreSQL via Prisma
+  const rawDbUrl = process.env.DATABASE_URL || "";
+  let dbDiagnostics: any = null;
+  try {
+    const parsed = new URL(rawDbUrl);
+    dbDiagnostics = {
+      username: parsed.username,
+      host: parsed.host,
+      port: parsed.port,
+      database: parsed.pathname.replace(/^\//, ""),
+      hasPassword: !!parsed.password,
+      passwordLength: parsed.password ? parsed.password.length : 0,
+      hasBracketsInPassword: parsed.password.includes("[") || parsed.password.includes("]"),
+      pgbouncerParam: parsed.searchParams.get("pgbouncer"),
+    };
+  } catch (e: any) {
+    dbDiagnostics = { error: "Failed to parse DATABASE_URL: " + e.message };
+  }
+
   try {
     const dbStart = Date.now();
     await prisma.$queryRaw`SELECT 1`;
@@ -17,11 +35,13 @@ export async function GET() {
       status: "HEALTHY",
       provider: "Supabase PostgreSQL",
       latencyMs: dbLatency,
+      diagnostics: dbDiagnostics,
     };
   } catch (error: any) {
     checks.database = {
       status: "DEGRADED",
       error: error.message || "Database connection failed",
+      diagnostics: dbDiagnostics,
     };
   }
 
