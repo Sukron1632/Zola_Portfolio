@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import {
   Server,
   Database,
@@ -18,7 +19,14 @@ import {
   Star,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { getSkills, getExperience, getCertifications } from "@/lib/storage";
+import {
+  getSkills,
+  getExperience,
+  getCertifications,
+  TechItem,
+  CareerRecord,
+  Credential,
+} from "@/lib/storage";
 import TrackedLink from "@/components/TrackedLink";
 import CopyEmailButton from "@/components/CopyEmailButton";
 import ProjectDetailTrigger from "@/components/ProjectDetailTrigger";
@@ -57,8 +65,18 @@ export default async function PublicHomePage() {
     location?: string | null;
   } | null = null;
 
+  let dbSkills: any[] = [];
+  let dbExperience: any[] = [];
+  let dbCertifications: any[] = [];
+
   try {
-    const [fetchedProjects, fetchedProfile] = await Promise.all([
+    const [
+      fetchedProjects,
+      fetchedProfile,
+      fetchedSkills,
+      fetchedExperience,
+      fetchedCertifications,
+    ] = await Promise.all([
       prisma.project.findMany({
         where: { isPublished: true },
         orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
@@ -66,11 +84,24 @@ export default async function PublicHomePage() {
       prisma.profile.findFirst({
         where: { id: 1 },
       }),
+      prisma.skill.findMany({
+        orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+      }),
+      prisma.experience.findMany({
+        where: { isPublished: true },
+        orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+      }),
+      prisma.certification.findMany({
+        orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+      }),
     ]);
     publishedProjects = fetchedProjects;
     profile = fetchedProfile;
+    dbSkills = fetchedSkills;
+    dbExperience = fetchedExperience;
+    dbCertifications = fetchedCertifications;
   } catch (error) {
-    console.error("Error fetching homepage public data:", error);
+    console.error("Error fetching homepage public data from database:", error);
   }
 
   const heroTitle =
@@ -84,15 +115,49 @@ export default async function PublicHomePage() {
   const githubUrl = profile?.githubUrl || "https://github.com";
   const linkedinUrl = profile?.linkedinUrl || "https://linkedin.com";
 
-  const storedSkills = getSkills();
+  // Use database data dynamically with fallback to local storage
+  const storedSkills: TechItem[] =
+    dbSkills.length > 0
+      ? dbSkills.map((s) => ({
+          ...s,
+          category: s.category as "backend" | "frontend" | "framework" | "analysis" | "devops",
+          level: s.level as "mastery" | "proficient" | "familiar",
+          description: s.description || "",
+        }))
+      : getSkills();
+
   const backendSkills = storedSkills.filter((s) => s.category === "backend" && s.isFeatured);
   const frontendSkills = storedSkills.filter((s) => s.category === "frontend" && s.isFeatured);
   const frameworkSkills = storedSkills.filter((s) => s.category === "framework" && s.isFeatured);
   const analysisSkills = storedSkills.filter((s) => s.category === "analysis" && s.isFeatured);
   const devopsSkills = storedSkills.filter((s) => s.category === "devops" && s.isFeatured);
 
-  const storedExperience = getExperience().filter((e) => e.isPublished !== false);
-  const storedCertifications = getCertifications();
+  const storedExperience: CareerRecord[] =
+    dbExperience.length > 0
+      ? dbExperience.map((e) => ({
+          ...e,
+          type: e.type as "Internship" | "Contract" | "Full-time" | "Gov/Community",
+          status: e.status as "Completed" | "Current",
+          location: e.location || "Indonesia",
+          impactMetric: e.impactMetric || "",
+          technologies: Array.isArray(e.technologies) ? (e.technologies as string[]) : [],
+          proofFileName: e.proofFileName || undefined,
+        }))
+      : getExperience().filter((e) => e.isPublished !== false);
+
+  const storedCertifications: Credential[] =
+    dbCertifications.length > 0
+      ? dbCertifications.map((c) => ({
+          ...c,
+          hash: c.hash || "sha256:verified...",
+          fileName: c.fileName || "Certificate.pdf",
+          fileSize: c.fileSize || "1.0 MB",
+          verifyUrl: c.verifyUrl || "",
+          fileUrl: c.fileUrl || undefined,
+          imageUrl: c.imageUrl || undefined,
+          description: c.description || undefined,
+        }))
+      : getCertifications();
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24 space-y-28">
@@ -392,7 +457,7 @@ export default async function PublicHomePage() {
                   </p>
                   {item.technologies && item.technologies.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 pt-1">
-                      {item.technologies.map((tech, tIdx) => (
+                      {item.technologies.map((tech: string, tIdx: number) => (
                         <span
                           key={tIdx}
                           className="text-[10px] font-mono px-2 py-0.5 rounded bg-obsidian-card text-obsidian-subtext border border-obsidian-border"

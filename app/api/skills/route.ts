@@ -1,34 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  getSkills,
-  saveSkills,
-  addSkill,
-  updateSkill,
-  deleteSkill,
-  TechItem,
-} from "@/lib/storage";
+import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/skills - Retrieve all registered skills
+// GET /api/skills - Retrieve all registered skills from PostgreSQL
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get("category");
     const featured = searchParams.get("featured");
 
-    let skills = getSkills();
-
-    if (category) {
-      skills = skills.filter((s) => s.category === category);
-    }
-    if (featured === "true") {
-      skills = skills.filter((s) => s.isFeatured);
-    }
+    const skills = await prisma.skill.findMany({
+      where: {
+        category: category || undefined,
+        isFeatured: featured === "true" ? true : undefined,
+      },
+      orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+    });
 
     return NextResponse.json(skills, { status: 200 });
   } catch (error: any) {
-    console.error("Error fetching skills:", error);
+    console.error("Error fetching skills from database:", error);
     return NextResponse.json(
       { error: error.message || "Failed to retrieve skills" },
       { status: 500 }
@@ -36,7 +28,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST /api/skills - Add a new skill
+// POST /api/skills - Add a new skill to PostgreSQL
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -48,18 +40,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const newSkill = addSkill({
-      name: String(body.name).trim(),
-      category: body.category,
-      description: body.description ? String(body.description).trim() : "",
-      proficiency: Number(body.proficiency) || 85,
-      level: body.level || "mastery",
-      isFeatured: body.isFeatured !== undefined ? Boolean(body.isFeatured) : true,
+    const newSkill = await prisma.skill.create({
+      data: {
+        id: body.id ? String(body.id) : undefined,
+        name: String(body.name).trim(),
+        category: body.category,
+        description: body.description ? String(body.description).trim() : null,
+        proficiency: Number(body.proficiency) || 85,
+        level: body.level || "mastery",
+        isFeatured: body.isFeatured !== undefined ? Boolean(body.isFeatured) : true,
+      },
     });
 
     return NextResponse.json(newSkill, { status: 201 });
   } catch (error: any) {
-    console.error("Error creating skill:", error);
+    console.error("Error creating skill in database:", error);
     return NextResponse.json(
       { error: error.message || "Failed to persist skill" },
       { status: 500 }
@@ -67,14 +62,29 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PUT /api/skills - Update existing skill or save full reordered array
+// PUT /api/skills - Update existing skill or save full reordered array in PostgreSQL
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // If body is an array, save entire collection
+    // If body is an array, save order for each
     if (Array.isArray(body)) {
-      saveSkills(body as TechItem[]);
+      await prisma.$transaction(
+        body.map((item: any, idx: number) =>
+          prisma.skill.update({
+            where: { id: String(item.id) },
+            data: {
+              order: idx,
+              name: item.name !== undefined ? String(item.name).trim() : undefined,
+              category: item.category !== undefined ? item.category : undefined,
+              description: item.description !== undefined ? String(item.description).trim() : undefined,
+              proficiency: item.proficiency !== undefined ? Number(item.proficiency) : undefined,
+              level: item.level !== undefined ? item.level : undefined,
+              isFeatured: item.isFeatured !== undefined ? Boolean(item.isFeatured) : undefined,
+            },
+          })
+        )
+      );
       return NextResponse.json({ success: true, count: body.length }, { status: 200 });
     }
 
@@ -85,14 +95,22 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const updated = updateSkill(body.id, body);
-    if (!updated) {
-      return NextResponse.json({ error: "Skill not found." }, { status: 404 });
-    }
+    const updated = await prisma.skill.update({
+      where: { id: String(body.id) },
+      data: {
+        name: body.name !== undefined ? String(body.name).trim() : undefined,
+        category: body.category !== undefined ? body.category : undefined,
+        description: body.description !== undefined ? String(body.description).trim() : undefined,
+        proficiency: body.proficiency !== undefined ? Number(body.proficiency) : undefined,
+        level: body.level !== undefined ? body.level : undefined,
+        isFeatured: body.isFeatured !== undefined ? Boolean(body.isFeatured) : undefined,
+        order: body.order !== undefined ? Number(body.order) : undefined,
+      },
+    });
 
     return NextResponse.json(updated, { status: 200 });
   } catch (error: any) {
-    console.error("Error updating skill:", error);
+    console.error("Error updating skill in database:", error);
     return NextResponse.json(
       { error: error.message || "Failed to update skill" },
       { status: 500 }
@@ -100,7 +118,7 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-// DELETE /api/skills - Remove a skill by ID
+// DELETE /api/skills - Remove a skill by ID from PostgreSQL
 export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -110,14 +128,13 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Skill ID is required." }, { status: 400 });
     }
 
-    const success = deleteSkill(id);
-    if (!success) {
-      return NextResponse.json({ error: "Skill not found." }, { status: 404 });
-    }
+    await prisma.skill.delete({
+      where: { id: String(id) },
+    });
 
     return NextResponse.json({ success: true, id }, { status: 200 });
   } catch (error: any) {
-    console.error("Error deleting skill:", error);
+    console.error("Error deleting skill from database:", error);
     return NextResponse.json(
       { error: error.message || "Failed to delete skill" },
       { status: 500 }
@@ -125,7 +142,7 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
-// PATCH /api/skills - Toggle isFeatured
+// PATCH /api/skills - Toggle isFeatured in PostgreSQL
 export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();
@@ -133,17 +150,24 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Skill ID is required." }, { status: 400 });
     }
 
-    const skill = getSkills().find((s) => s.id === body.id);
-    if (!skill) {
+    const current = await prisma.skill.findUnique({
+      where: { id: String(body.id) },
+    });
+
+    if (!current) {
       return NextResponse.json({ error: "Skill not found." }, { status: 404 });
     }
 
-    const newFeatured = body.isFeatured !== undefined ? Boolean(body.isFeatured) : !skill.isFeatured;
-    const updated = updateSkill(body.id, { isFeatured: newFeatured });
+    const newFeatured = body.isFeatured !== undefined ? Boolean(body.isFeatured) : !current.isFeatured;
+
+    const updated = await prisma.skill.update({
+      where: { id: String(body.id) },
+      data: { isFeatured: newFeatured },
+    });
 
     return NextResponse.json(updated, { status: 200 });
   } catch (error: any) {
-    console.error("Error patching skill:", error);
+    console.error("Error patching skill in database:", error);
     return NextResponse.json(
       { error: error.message || "Failed to patch skill" },
       { status: 500 }

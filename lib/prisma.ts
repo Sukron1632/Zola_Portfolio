@@ -43,7 +43,14 @@ function getDatabaseUrl(): string | undefined {
 
 const dbUrl = getDatabaseUrl();
 
-export const prisma =
+export type ExtendedPrismaClient = PrismaClient & {
+  certification: any;
+  skill: any;
+  experience: any;
+  systemSetting: any;
+};
+
+const rawPrisma =
   globalThis.prisma ??
   new PrismaClient({
     datasources: dbUrl
@@ -59,8 +66,10 @@ export const prisma =
         : ["error"],
   });
 
+export const prisma = rawPrisma as unknown as ExtendedPrismaClient;
+
 if (process.env.NODE_ENV !== "production") {
-  globalThis.prisma = prisma;
+  globalThis.prisma = rawPrisma;
 }
 
 export default prisma;

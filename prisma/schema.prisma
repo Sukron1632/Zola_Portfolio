@@ -108,3 +108,75 @@ model ClickTracker {
 
   @@index([projectId])
 }
+
+// Official Certifications & Accreditations
+model Certification {
+  id           String   @id @default(cuid())
+  title        String
+  issuer       String
+  credentialId String
+  issueDate    String
+  hash         String?
+  fileName     String?
+  fileSize     String?
+  isHeroBadge  Boolean  @default(false)
+  verifyUrl    String?
+  fileUrl      String?
+  imageUrl     String?
+  gallery      String[] @default([])
+  description  String?  @db.Text
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Technical Skills & Arsenal
+model Skill {
+  id          String   @id @default(cuid())
+  name        String
+  category    String   // "backend" | "frontend" | "framework" | "analysis" | "devops"
+  description String?  @db.Text
+  proficiency Int      @default(85)
+  level       String   @default("mastery") // "mastery" | "proficient" | "familiar"
+  isFeatured  Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Career Milestones & Experience
+model Experience {
+  id            String   @id @default(cuid())
+  role          String
+  organization  String
+  location      String?  @default("Indonesia")
+  period        String
+  type          String   @default("Internship")
+  status        String   @default("Completed")
+  impactMetric  String?
+  description   String   @db.Text
+  technologies  String[] @default([])
+  proofFileName String?
+  isPublished   Boolean  @default(true)
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// Global System Configurations
+model SystemSetting {
+  id              Int      @id @default(1)
+  displayName     String   @default("Zola Dimas Firmansyah")
+  titleTag        String   @default("Information Systems & Junior Web Developer")
+  siteTitle       String?  @default("Information Systems & Junior Web Developer")
+  adminEmail      String   @default("zoladimas32@gmail.com")
+  sessionTimeout  String   @default("7 Days (Standard Persistence)")
+  logClicks       Boolean  @default(true)
+  deanonymizeGeo  Boolean  @default(true)
+  retentionDays   String   @default("30 Days (Auto-pruning)")
+  poolLimit       Int      @default(20)
+  maintenanceMode Boolean  @default(false)
+  maxUploadSizeMB Int      @default(10)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
