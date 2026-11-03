@@ -31,8 +31,27 @@ import TrackedLink from "@/components/TrackedLink";
 import CopyEmailButton from "@/components/CopyEmailButton";
 import ProjectDetailTrigger from "@/components/ProjectDetailTrigger";
 import CertificateViewTrigger from "@/components/CertificateViewTrigger";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [profile, setting] = await Promise.all([
+    prisma.profile.findFirst({ where: { id: 1 } }).catch(() => null),
+    prisma.systemSetting.findFirst({ where: { id: 1 } }).catch(() => null),
+  ]);
+
+  const name = setting?.displayName || profile?.name || "Zola Dimas Firmansyah";
+  const title = setting?.titleTag || profile?.heroTitle || "Systems Architect & Backend Engineer";
+  const description =
+    profile?.aboutText ||
+    "Information Systems portfolio specializing in high-throughput backend architecture, PostgreSQL, and system analysis.";
+
+  return {
+    title: `${name} — ${title}`,
+    description,
+  };
+}
 
 export default async function PublicHomePage() {
   let publishedProjects: Array<{
@@ -800,25 +819,29 @@ export default async function PublicHomePage() {
         </div>
 
         <div className="pt-6 flex flex-wrap justify-center items-center gap-4 text-xs font-mono text-obsidian-subtext border-t border-obsidian-border/60 max-w-md mx-auto relative z-10">
-          <a
-            href={"https://github.com/Sukron1632"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white px-3 py-1.5 rounded-full bg-obsidian-card/50 border border-obsidian-border hover:border-white/20 transition-all inline-flex items-center gap-1.5"
-          >
-            <Github className="w-4 h-4" />
-            <span>GitHub Profile</span>
-          </a>
-          <span className="text-obsidian-border">•</span>
-          <a
-            href={"https://www.linkedin.com/in/zola-firmansyah-444b62336/"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white px-3 py-1.5 rounded-full bg-obsidian-card/50 border border-obsidian-border hover:border-white/20 transition-all inline-flex items-center gap-1.5"
-          >
-            <ExternalLink className="w-4 h-4" />
-            <span>LinkedIn Profile</span>
-          </a>
+          {githubUrl && (
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white px-3 py-1.5 rounded-full bg-obsidian-card/50 border border-obsidian-border hover:border-white/20 transition-all inline-flex items-center gap-1.5"
+            >
+              <Github className="w-4 h-4" />
+              <span>GitHub Profile</span>
+            </a>
+          )}
+          {githubUrl && linkedinUrl && <span className="text-obsidian-border">•</span>}
+          {linkedinUrl && (
+            <a
+              href={linkedinUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white px-3 py-1.5 rounded-full bg-obsidian-card/50 border border-obsidian-border hover:border-white/20 transition-all inline-flex items-center gap-1.5"
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span>LinkedIn Profile</span>
+            </a>
+          )}
         </div>
       </section>
     </div>
