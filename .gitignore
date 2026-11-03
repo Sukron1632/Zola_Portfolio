@@ -27,6 +27,9 @@ docs/
 scratch/
 *.draft.*
 *.notes.*
+PANDUAN_AUTOMATION_TESTING.md
+docs/PANDUAN_AUTOMATION_TESTING.md
+*PANDUAN_AUTOMATION_TESTING*
 
 # -----------------------------------------------------------------------
 # 3. DEPENDENCIES & PACKAGE MANAGERS

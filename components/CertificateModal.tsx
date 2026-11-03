@@ -534,7 +534,8 @@ export default function CertificateModal({
         {/* Modal Footer Controls: Always anchored and visible */}
         <div className="flex-shrink-0 flex items-center justify-between px-5 py-3 border-t border-obsidian-border bg-obsidian-card/90 font-mono text-xs">
           <div>
-            {cert.verifyUrl && (
+            {/* Disembunyikan sementara sesuai permintaan */}
+            {/* {cert.verifyUrl && (
               <TrackedLink
                 href={cert.verifyUrl}
                 target="_blank"
@@ -544,7 +545,7 @@ export default function CertificateModal({
                 <span>Verify on Issuing Authority</span>
                 <ExternalLink className="w-3 h-3" />
               </TrackedLink>
-            )}
+            )} */}
           </div>
 
           <button

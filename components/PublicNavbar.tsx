@@ -78,7 +78,7 @@ export default function PublicNavbar() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-emerald opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-emerald" />
             </span>
-            AVAILABLE FOR WORK / CONTRACTS
+            Currently interning as a QA/QC
           </div>
         </div>
 
@@ -149,7 +149,7 @@ export default function PublicNavbar() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-emerald opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-emerald" />
                   </span>
-                  <span>AVAILABLE FOR WORK / CONTRACTS</span>
+                  <span>Currently interning as a QA/QC</span>
                 </div>
                 <span className="text-[10px] text-brand-emerald uppercase">2024-2025</span>
               </div>

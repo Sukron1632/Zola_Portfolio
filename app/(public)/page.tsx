@@ -107,7 +107,7 @@ export default async function PublicHomePage() {
         <div className="flex flex-wrap items-center justify-center gap-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-emerald/10 border border-brand-emerald/30 text-brand-emerald text-xs font-mono font-medium shadow-sm shadow-brand-emerald/10">
             <span className="w-2 h-2 rounded-full bg-brand-emerald animate-pulse" />
-            <span>Open to Engineering & Technical Roles</span>
+            <span>Quality Assurance & Quality Control Intern</span>
           </div>
           {profile?.location && (
             <div className="inline-flex items-center gap-1.5 text-xs font-mono text-obsidian-subtext px-2.5 py-1 rounded-full bg-obsidian-card/60 border border-obsidian-border">

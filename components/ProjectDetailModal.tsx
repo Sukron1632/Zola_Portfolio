@@ -13,6 +13,8 @@ import {
   ChevronLeft,
   Maximize2,
   Eye,
+  ExternalLink,
+  Video,
 } from "lucide-react";
 import TrackedLink from "@/components/TrackedLink";
 
@@ -20,9 +22,11 @@ export interface ProjectDetailData {
   id: string;
   title: string;
   slug: string;
+  badge?: string | null;
   description: string;
   thumbnail?: string | null;
   videoUrl?: string | null;
+  liveUrl?: string | null;
   techStack: string[];
   repoUrl?: string | null;
   gallery?: string[];
@@ -133,10 +137,17 @@ export default function ProjectDetailModal({
         <div className="relative w-full max-w-3xl rounded-xl border border-obsidian-border bg-obsidian-canvas shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-200 ease-out">
           {/* Modal Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-obsidian-border bg-obsidian-card/60">
-            <div className="space-y-0.5">
-              <span className="text-[10px] font-mono text-brand-emerald uppercase tracking-wider">
-                Architecture Blueprint & System Specifications
-              </span>
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-mono text-brand-emerald uppercase tracking-wider">
+                  Architecture Blueprint & System Specifications
+                </span>
+                {project.badge && (
+                  <span className="px-2 py-0.5 rounded bg-brand-cyan/10 border border-brand-cyan/30 text-[9px] font-mono text-brand-cyan-dim uppercase">
+                    {project.badge}
+                  </span>
+                )}
+              </div>
               <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
                 {project.title}
               </h2>
@@ -353,16 +364,42 @@ export default function ProjectDetailModal({
 
           {/* Modal Footer Actions */}
           <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-t border-obsidian-border bg-obsidian-card/70">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
+              {project.liveUrl && (
+                <TrackedLink
+                  projectId={project.id}
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-brand-cyan hover:bg-cyan-400 text-obsidian-void text-xs font-bold font-mono transition-colors shadow-sm"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Live Production Demo</span>
+                </TrackedLink>
+              )}
+
+              {project.videoUrl && (
+                <TrackedLink
+                  projectId={project.id}
+                  href={project.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-emerald/40 hover:border-brand-emerald bg-brand-emerald/10 hover:bg-brand-emerald/20 text-brand-emerald-dim hover:text-brand-emerald text-xs font-mono transition-all"
+                >
+                  <Video className="w-3.5 h-3.5" />
+                  <span>Video Demo</span>
+                </TrackedLink>
+              )}
+
               {project.repoUrl && (
                 <TrackedLink
                   projectId={project.id}
                   href={project.repoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-obsidian-border hover:border-obsidian-border-focus bg-obsidian-canvas hover:bg-obsidian-highlight text-obsidian-text hover:text-white text-xs font-mono transition-all"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-obsidian-border hover:border-obsidian-border-focus bg-obsidian-canvas hover:bg-obsidian-highlight text-obsidian-text hover:text-white text-xs font-mono transition-all"
                 >
-                  <Github className="w-4 h-4" />
+                  <Github className="w-3.5 h-3.5" />
                   <span>Source Repository</span>
                 </TrackedLink>
               )}
@@ -370,7 +407,7 @@ export default function ProjectDetailModal({
             <button
               onClick={onClose}
               type="button"
-              className="px-4 py-2 rounded-md bg-obsidian-card hover:bg-obsidian-highlight text-obsidian-subtext hover:text-white text-xs font-mono border border-obsidian-border transition-colors"
+              className="px-4 py-1.5 rounded-md bg-obsidian-card hover:bg-obsidian-highlight text-obsidian-subtext hover:text-white text-xs font-mono border border-obsidian-border transition-colors ml-auto"
             >
               Close Blueprint
             </button>

@@ -70,7 +70,7 @@ Beranda publik dibangun sebagai Server Component tunggal yang mengambil data sec
 
 1. **Hero Section**:
    * Menampilkan headline arsitektural dinamis dari database (`profile.heroTitle`), lokasi domisili (`profile.location`), bio ringkas (`profile.aboutText`), serta avatar Supabase dengan efek *halo glow*.
-   * Status beacon aktif bertuliskan `"AVAILABLE FOR WORK / CONTRACTS"`.
+   * Status beacon aktif bertuliskan `"Currently interning as a QA/QC"`.
    * Tombol CTA unduh resume (`TrackedLink`), eksplorasi proyek, dan dialog salin email instan (`CopyEmailButton`).
 2. **Structured Engineering Arsenal (Matriks Keahlian)**:
    * **Core Backend**: Node.js, PostgreSQL (Neon), Prisma ORM, REST/GraphQL.

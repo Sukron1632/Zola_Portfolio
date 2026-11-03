@@ -17,6 +17,12 @@ import {
   Calendar,
   Maximize2,
   Star,
+  ExternalLink,
+  Video,
+  Globe,
+  FileCode,
+  Sparkles,
+  Download,
 } from "lucide-react";
 import { compressImage } from "@/lib/compressImage";
 
@@ -25,9 +31,11 @@ export default function CreateProjectPage() {
 
   const [formData, setFormData] = useState({
     title: "",
+    slug: "",
     badge: "",
     description: "",
     techStack: "",
+    liveUrl: "",
     repoUrl: "",
     videoUrl: "",
     completedAt: "",
@@ -35,19 +43,50 @@ export default function CreateProjectPage() {
     isPublished: true,
   });
 
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
   const [gallery, setGallery] = useState<string[]>([]);
   const [newGalleryUrl, setNewGalleryUrl] = useState("");
+  const [documentUrl, setDocumentUrl] = useState<string>("");
 
   const [isUploadingThumb, setIsUploadingThumb] = useState(false);
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
+  const [isUploadingDoc, setIsUploadingDoc] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [previewGalleryImage, setPreviewGalleryImage] = useState<string | null>(null);
 
   const dateInputRef = useRef<HTMLInputElement>(null);
 
-  // Upload thumbnail
+  // Helper to generate URL-safe kebab-case slug
+  const generateSlug = (text: string) => {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  };
+
+  // Synchronize title changes with slug if slug was not manually touched
+  const handleTitleChange = (val: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      title: val,
+      slug: isSlugManuallyEdited ? prev.slug : generateSlug(val),
+    }));
+  };
+
+  // Re-generate slug button
+  const handleRegenerateSlug = () => {
+    setFormData((prev) => ({
+      ...prev,
+      slug: generateSlug(prev.title),
+    }));
+    setIsSlugManuallyEdited(false);
+  };
+
+  // Upload thumbnail with client-side compression
   const handleThumbnailUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -97,7 +136,7 @@ export default function CreateProjectPage() {
     }
   };
 
-  // Upload Gallery Image
+  // Upload Gallery Image with client-side compression
   const handleGalleryUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -147,6 +186,50 @@ export default function CreateProjectPage() {
     }
   };
 
+  // Upload Technical Specification / SRS Document (PDF/DOCX)
+  const handleDocumentUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingDoc(true);
+    setErrorMessage(null);
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", file);
+      uploadFormData.append("folder", "documents");
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      if (response.status === 413) {
+        throw new Error("Ukuran dokumen SRS melebihi batas 4.5MB. Harap gunakan berkas yang lebih kecil.");
+      }
+
+      const text = await response.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(`Respon upload tidak valid (${response.status} ${response.statusText})`);
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || "Gagal mengunggah dokumen SRS.");
+      }
+
+      setDocumentUrl(data.url);
+    } catch (err: any) {
+      setErrorMessage(err.message || "Gagal mengunggah dokumen spesifikasi teknis.");
+    } finally {
+      setIsUploadingDoc(false);
+    }
+  };
+
   const handleAddGalleryUrl = () => {
     if (!newGalleryUrl.trim()) return;
     setGallery((prev) => [...prev, newGalleryUrl.trim()]);
@@ -170,8 +253,13 @@ export default function CreateProjectPage() {
         },
         body: JSON.stringify({
           ...formData,
+          slug: formData.slug.trim() || undefined,
+          liveUrl: formData.liveUrl.trim() || null,
+          repoUrl: formData.repoUrl.trim() || null,
+          videoUrl: formData.videoUrl.trim() || null,
           thumbnail: thumbnailUrl || null,
           gallery: gallery,
+          documentUrl: documentUrl.trim() || null,
           completedAt: formData.completedAt || null,
         }),
       });
@@ -214,7 +302,7 @@ export default function CreateProjectPage() {
           </h1>
         </div>
         <p className="text-xs text-obsidian-subtext mt-1 font-mono">
-          Enter project metadata, technical specifications, SRS documentation, and visual gallery blueprints.
+          Enter project metadata, technical specifications, SRS documentation, live demo endpoints, and visual gallery blueprints.
         </p>
       </div>
 
@@ -271,7 +359,7 @@ export default function CreateProjectPage() {
                     Upload Cover Image
                   </span>
                   <span className="text-[10px] text-obsidian-muted">
-                    PNG, JPG, WEBP (Max 10MB)
+                    PNG, JPG, WEBP (Auto compressed, Max 10MB)
                   </span>
                 </div>
               )}
@@ -289,9 +377,7 @@ export default function CreateProjectPage() {
               type="text"
               required
               value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
+              onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="e.g. Multi-Hotel IT Asset Management"
               className="w-full px-3.5 py-2 rounded-md border border-obsidian-border bg-obsidian-void text-white text-xs focus:outline-none focus:border-brand-emerald transition-colors"
             />
@@ -311,6 +397,45 @@ export default function CreateProjectPage() {
               className="w-full px-3.5 py-2 rounded-md border border-obsidian-border bg-obsidian-void text-white text-xs focus:outline-none focus:border-brand-emerald transition-colors"
             />
           </div>
+        </div>
+
+        {/* Custom Slug with Auto Generator Helper */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-[11px] font-semibold text-obsidian-subtext uppercase tracking-wider">
+              URL Slug Identifier
+            </label>
+            <button
+              type="button"
+              onClick={handleRegenerateSlug}
+              disabled={!formData.title}
+              className="inline-flex items-center gap-1 text-[10px] font-mono text-brand-cyan hover:text-cyan-300 disabled:opacity-40 transition-colors"
+            >
+              <Sparkles className="w-3 h-3" />
+              <span>Auto Generate from Title</span>
+            </button>
+          </div>
+          <div className="relative flex items-center">
+            <span className="absolute left-3 text-obsidian-muted select-none text-xs font-mono">
+              /
+            </span>
+            <input
+              type="text"
+              value={formData.slug}
+              onChange={(e) => {
+                setIsSlugManuallyEdited(true);
+                setFormData({
+                  ...formData,
+                  slug: e.target.value.toLowerCase().replace(/\s+/g, "-"),
+                });
+              }}
+              placeholder="multi-hotel-it-asset-management"
+              className="w-full pl-6 pr-3.5 py-2 rounded-md border border-obsidian-border bg-obsidian-void text-brand-emerald font-mono text-xs focus:outline-none focus:border-brand-emerald transition-colors"
+            />
+          </div>
+          <p className="text-[10px] text-obsidian-muted mt-1 font-mono">
+            Unique slug identifier used for direct URL routing, telemetries, and blueprint lookup.
+          </p>
         </div>
 
         {/* Executive Summary & Architecture Description */}
@@ -418,26 +543,28 @@ export default function CreateProjectPage() {
           </div>
         </div>
 
-        {/* GitHub Repo URL & Video Architecture URL */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Endpoints & Links Grid: Live Demo, Video Walkthrough, GitHub Repository */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-[11px] font-semibold text-obsidian-subtext uppercase tracking-wider mb-2">
-              GitHub Repository URL
+            <label className="block text-[11px] font-semibold text-obsidian-subtext uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <Globe className="w-3.5 h-3.5 text-brand-cyan" />
+              <span>Live Production URL</span>
             </label>
             <input
               type="url"
-              value={formData.repoUrl}
+              value={formData.liveUrl}
               onChange={(e) =>
-                setFormData({ ...formData, repoUrl: e.target.value })
+                setFormData({ ...formData, liveUrl: e.target.value })
               }
-              placeholder="https://github.com/username/project"
+              placeholder="https://app.domain.com"
               className="w-full px-3.5 py-2 rounded-md border border-obsidian-border bg-obsidian-void text-white text-xs focus:outline-none focus:border-brand-emerald transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-semibold text-obsidian-subtext uppercase tracking-wider mb-2">
-              Live Architecture Demo URL
+            <label className="block text-[11px] font-semibold text-obsidian-subtext uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <Video className="w-3.5 h-3.5 text-brand-emerald" />
+              <span>Video Demo / Tour URL</span>
             </label>
             <input
               type="url"
@@ -445,10 +572,94 @@ export default function CreateProjectPage() {
               onChange={(e) =>
                 setFormData({ ...formData, videoUrl: e.target.value })
               }
-              placeholder="https://project-demo.domain.com"
+              placeholder="https://youtube.com/watch?v=..."
               className="w-full px-3.5 py-2 rounded-md border border-obsidian-border bg-obsidian-void text-white text-xs focus:outline-none focus:border-brand-emerald transition-colors"
             />
           </div>
+
+          <div>
+            <label className="block text-[11px] font-semibold text-obsidian-subtext uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <FileCode className="w-3.5 h-3.5 text-obsidian-subtext" />
+              <span>GitHub Repository URL</span>
+            </label>
+            <input
+              type="url"
+              value={formData.repoUrl}
+              onChange={(e) =>
+                setFormData({ ...formData, repoUrl: e.target.value })
+              }
+              placeholder="https://github.com/username/repo"
+              className="w-full px-3.5 py-2 rounded-md border border-obsidian-border bg-obsidian-void text-white text-xs focus:outline-none focus:border-brand-emerald transition-colors"
+            />
+          </div>
+        </div>
+
+        {/* Technical Specifications & SRS Document (PDF/DOCX) */}
+        <div className="p-4 rounded-lg border border-obsidian-border bg-obsidian-void/60 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <label className="block text-[11px] font-semibold text-white uppercase tracking-wider flex items-center gap-1.5">
+                <FileText className="w-4 h-4 text-brand-emerald" />
+                <span>Technical Specifications & SRS Document</span>
+              </label>
+              <p className="text-[10px] text-obsidian-muted font-mono">
+                Attach formal architecture documentation, SRS specification, or UML system blueprints (PDF or DOCX).
+              </p>
+            </div>
+            <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-emerald/40 bg-brand-emerald/10 hover:bg-brand-emerald/20 text-brand-emerald-dim hover:text-brand-emerald text-xs cursor-pointer transition-all">
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                className="hidden"
+                onChange={handleDocumentUpload}
+                disabled={isUploadingDoc}
+              />
+              {isUploadingDoc ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Upload className="w-3.5 h-3.5" />
+              )}
+              <span>Upload Document</span>
+            </label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="url"
+              value={documentUrl}
+              onChange={(e) => setDocumentUrl(e.target.value)}
+              placeholder="https://domain.com/docs/system-specification-srs.pdf"
+              className="flex-1 px-3.5 py-2 rounded-md border border-obsidian-border bg-obsidian-canvas text-white text-xs focus:outline-none focus:border-brand-emerald transition-colors font-mono"
+            />
+            {documentUrl && (
+              <button
+                type="button"
+                onClick={() => setDocumentUrl("")}
+                className="p-2 rounded-md border border-obsidian-border bg-obsidian-card hover:bg-obsidian-highlight text-rose-400 hover:text-white transition-colors"
+                title="Remove attached document"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {documentUrl && (
+            <div className="flex items-center justify-between p-2.5 rounded border border-brand-emerald/30 bg-brand-emerald/5 text-xs font-mono">
+              <div className="flex items-center gap-2 truncate text-brand-emerald-dim">
+                <FileText className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">{documentUrl}</span>
+              </div>
+              <a
+                href={documentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[11px] text-brand-emerald hover:underline shrink-0 ml-2"
+              >
+                <Download className="w-3 h-3" />
+                <span>Test Link</span>
+              </a>
+            </div>
+          )}
         </div>
 
         {/* Visual Blueprint & Gallery Screenshots */}
@@ -477,6 +688,24 @@ export default function CreateProjectPage() {
               )}
               <span>Upload Screenshot</span>
             </label>
+          </div>
+
+          {/* Add gallery image URL directly */}
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={newGalleryUrl}
+              onChange={(e) => setNewGalleryUrl(e.target.value)}
+              placeholder="Or paste external screenshot URL (https://...)"
+              className="flex-1 px-3.5 py-1.5 rounded-md border border-obsidian-border bg-obsidian-void text-white text-xs focus:outline-none focus:border-brand-emerald transition-colors"
+            />
+            <button
+              type="button"
+              onClick={handleAddGalleryUrl}
+              className="px-3 py-1.5 rounded-md border border-obsidian-border bg-obsidian-card hover:bg-obsidian-highlight text-obsidian-text text-xs font-semibold transition-all"
+            >
+              Add URL
+            </button>
           </div>
 
           {gallery.length > 0 && (

@@ -62,7 +62,7 @@ await test("Public Homepage renders Obsidian design tokens & hero components", a
   const res = await fetch(`${BASE_URL}/`);
   const html = await res.text();
   assert.ok(containsText(html, "Zola Dimas Firmansyah"), "Missing owner name");
-  assert.ok(containsText(html, "AVAILABLE FOR WORK / CONTRACTS"), "Missing status beacon tag");
+  assert.ok(containsText(html, "Currently interning as a QA/QC"), "Missing status beacon tag");
   assert.ok(
     containsText(html, "Systems") || containsText(html, "Developer") || containsText(html, "Engineering"),
     "Missing engineering headline/tag"
