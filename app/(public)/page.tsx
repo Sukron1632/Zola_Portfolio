@@ -258,7 +258,7 @@ export default async function PublicHomePage() {
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md border border-obsidian-border hover:border-obsidian-border-focus bg-obsidian-card hover:bg-obsidian-highlight text-obsidian-text text-xs font-medium transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             <Github className="w-4 h-4" />
-            <span>GitHub 240+</span>
+            <span>GitHub 20+</span>
           </a>
         </div>
 
