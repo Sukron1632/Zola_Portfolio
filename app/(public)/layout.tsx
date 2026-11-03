@@ -3,12 +3,25 @@ import Link from "next/link";
 import { Terminal } from "lucide-react";
 import BackToTopButton from "@/components/BackToTopButton";
 import PublicNavbar from "@/components/PublicNavbar";
+import { prisma } from "@/lib/prisma";
 
-export default function PublicLayout({
+export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  let profile = null;
+  try {
+    profile = await prisma.profile.findFirst({ where: { id: 1 } });
+  } catch (err) {
+    console.error("Error fetching layout profile:", err);
+  }
+
+  const githubUrl = profile?.githubUrl || "https://github.com/zoladimas";
+  const linkedinUrl = profile?.linkedinUrl || "https://linkedin.com/in/zoladimas";
+  const name = profile?.name || "Zola Dimas Firmansyah";
+  const subtitle = profile?.heroSubtitle || "Information Systems & Junior Web Developer";
+
   return (
     <div className="min-h-screen bg-obsidian-void text-obsidian-text flex flex-col justify-between selection:bg-brand-emerald selection:text-obsidian-void relative">
       {/* Background Dot Grid Matrix with Vignette */}
@@ -34,27 +47,31 @@ export default function PublicLayout({
           <div className="flex items-center gap-2">
             <Terminal className="w-4 h-4 text-brand-emerald" />
             <span className="font-mono text-[11px] text-obsidian-subtext">
-              Zola Dimas Firmansyah — Information Systems & Junior Web Developer
+              {name} — {subtitle}
             </span>
           </div>
 
           <div className="flex items-center gap-6 text-[11px] font-mono">
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              GitHub
-            </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              LinkedIn
-            </a>
+            {githubUrl && (
+              <a
+                href={githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white transition-colors"
+              >
+                GitHub
+              </a>
+            )}
+            {linkedinUrl && (
+              <a
+                href={linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white transition-colors"
+              >
+                LinkedIn
+              </a>
+            )}
             <span className="text-obsidian-muted">
               © {new Date().getFullYear()} Precision Engine
             </span>

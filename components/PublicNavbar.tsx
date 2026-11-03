@@ -30,6 +30,22 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function PublicNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileData, setProfileData] = useState<{
+    name?: string;
+    heroSubtitle?: string;
+  } | null>(null);
+
+  // Fetch dynamic profile on mount
+  useEffect(() => {
+    fetch("/api/profile")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          setProfileData(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Close menu on Escape key
   useEffect(() => {
@@ -53,6 +69,11 @@ export default function PublicNavbar() {
     }
   }, [mobileMenuOpen]);
 
+  const displayName = profileData?.name
+    ? profileData.name.split(" ").slice(0, 2).join(" ")
+    : "Zola Dimas";
+  const statusRole = profileData?.heroSubtitle || "Currently interning as a QA/QC";
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.07] bg-obsidian-void/85 backdrop-blur-xl transition-all duration-300">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -60,11 +81,11 @@ export default function PublicNavbar() {
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-8 h-8 rounded-md bg-obsidian-card border border-obsidian-border flex items-center justify-center font-mono font-bold text-sm text-obsidian-text group-hover:border-brand-emerald/60 group-hover:text-brand-emerald group-hover:shadow-[0_0_15px_-3px_rgba(16,185,129,0.3)] transition-all duration-300">
-              Z
+              {displayName.charAt(0)}
             </div>
             <div className="flex flex-col">
               <span className="font-semibold text-sm tracking-tight text-white group-hover:text-brand-emerald transition-colors">
-                Zola Dimas
+                {displayName}
               </span>
               <span className="text-[10px] font-mono text-obsidian-muted sm:hidden">
                 Portfolio
@@ -78,7 +99,7 @@ export default function PublicNavbar() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-emerald opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-emerald" />
             </span>
-            Currently interning as a QA/QC
+            <span>{statusRole}</span>
           </div>
         </div>
 

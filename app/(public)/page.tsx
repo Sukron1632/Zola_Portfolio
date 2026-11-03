@@ -57,6 +57,7 @@ export default async function PublicHomePage() {
     name?: string | null;
     avatarUrl?: string | null;
     heroTitle?: string | null;
+    heroSubtitle?: string | null;
     aboutText?: string | null;
     emailContact?: string | null;
     resumeUrl?: string | null;
@@ -159,6 +160,8 @@ export default async function PublicHomePage() {
         }))
       : getCertifications();
 
+  const heroBadges = storedCertifications.filter((c) => c.isHeroBadge);
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24 space-y-28">
       {/* ========================================================= */}
@@ -172,7 +175,7 @@ export default async function PublicHomePage() {
         <div className="flex flex-wrap items-center justify-center gap-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-emerald/10 border border-brand-emerald/30 text-brand-emerald text-xs font-mono font-medium shadow-sm shadow-brand-emerald/10">
             <span className="w-2 h-2 rounded-full bg-brand-emerald animate-pulse" />
-            <span>Quality Assurance & Quality Control Intern</span>
+            <span>{profile?.heroSubtitle || "Quality Assurance & Quality Control Intern"}</span>
           </div>
           {profile?.location && (
             <div className="inline-flex items-center gap-1.5 text-xs font-mono text-obsidian-subtext px-2.5 py-1 rounded-full bg-obsidian-card/60 border border-obsidian-border">
@@ -239,6 +242,25 @@ export default async function PublicHomePage() {
             <span>GitHub 240+</span>
           </a>
         </div>
+
+        {/* Dynamic Verified Trust Badges / Accreditations (Pinned in Admin via Hero Badge toggle) */}
+        {heroBadges.length > 0 && (
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-2.5 max-w-2xl mx-auto animate-in fade-in duration-300">
+            {heroBadges.map((cert) => (
+              <CertificateViewTrigger
+                key={cert.id}
+                cert={cert}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-emerald/10 hover:bg-brand-emerald/20 text-brand-emerald border border-brand-emerald/30 hover:border-brand-emerald/60 text-xs font-mono font-medium transition-all shadow-sm shadow-brand-emerald/10 cursor-pointer group hover-lift"
+              >
+                <BadgeCheck className="w-3.5 h-3.5 text-brand-emerald group-hover:scale-110 transition-transform" />
+                <span className="text-white/90 group-hover:text-white font-medium">{cert.title}</span>
+                <span className="text-[10px] text-brand-emerald-dim bg-brand-emerald/15 px-1.5 py-0.2 rounded-full border border-brand-emerald/20 font-semibold">
+                  Verified
+                </span>
+              </CertificateViewTrigger>
+            ))}
+          </div>
+        )}
 
         {/* Telemetry Metric Ribbon */}
         <div className="pt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs font-mono text-obsidian-subtext border-t border-obsidian-border/70 max-w-2xl mx-auto">
